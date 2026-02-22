@@ -1,16 +1,23 @@
 # ══════════════════════════════════════════════════════
 #  DiviDash Pro — Configuração Netlify
-#  Arquivo: netlify.toml (coloque na RAIZ do projeto)
+#  Arquivo: netlify.toml (raiz do projeto)
 # ══════════════════════════════════════════════════════
 
 [build]
-  # Pasta onde estão index.html, style.css, app.js
   publish = "."
-  # Pasta das funções serverless
   functions = "netlify/functions"
 
+# Headers globais de segurança
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+
+# Headers CORS para as funções Netlify
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
