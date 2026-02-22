@@ -1,94 +1,119 @@
-/* ══ CLAUDE API: Análise de Ativo Individual ══ */
-async function analisarAtivoComClaude(ticker, d) {
-  const isFundo = d && (d.tipo === 'FII' || d.tipo === 'FIAGRO');
-  const perfilLabel = { conservador:'Conservador', moderado:'Moderado', arrojado:'Arrojado' }[perfil];
+// ══════════════════════════════════════════════════════
+//  DiviDash Pro — Netlify Function (Proxy GOOGLE GEMINI)
+//  Arquivo: netlify/functions/claude.js
+// ══════════════════════════════════════════════════════
 
-  let contextoAtivo = '';
-  if (d) {
-    contextoAtivo = isFundo
-      ? `TIPO: ${d.tipo} | SETOR: ${d.setor}
-Rendimento Mensal (DY): ${d.dy}% a.a.
-P/VP: ${d.pvp}x (${d.pvp < 1 ? 'abaixo do patrimonial = desconto' : 'acima do patrimonial = prêmio'})
-Isenção IR (PF): ${d.isentoIR ? 'SIM — rendimentos isentos para pessoa física' : 'NÃO'}
-Liquidez na B3: ${d.liquidez}
-Distribuição: ${d.payout}% (obrigatório por lei)
-Preço atual de referência: R$ ${d.preco}
-Descrição: ${d.desc}`
-      : `TIPO: Ação | SETOR: ${d.setor}
-Dividend Yield (DY): ${d.dy}% a.a.
-Payout: ${d.payout}% do lucro distribuído
-ROE (Retorno sobre Patrimônio): ${d.roe}%
-Dívida/EBITDA: ${d.divida === 0 ? 'N/A (setor bancário — dívida estrutural)' : d.divida + 'x'}
-P/VP: ${d.pvp}x
-Preço atual de referência: R$ ${d.preco}
-Descrição: ${d.desc}`;
-  } else {
-    contextoAtivo = `Ativo ${ticker} não encontrado na base local. Analise com base no seu conhecimento sobre este ativo na bolsa brasileira B3.`;
+exports.handler = async (event) => {
+  // Apenas aceitar POST
+  if (event.httpMethod !== 'POST') {
+    return { 
+      statusCode: 405, 
+      body: JSON.stringify({ error: 'Method Not Allowed' }) 
+    };
   }
 
-  const prompt = `Você é um assessor especialista em investimentos de dividendos na bolsa brasileira (B3), focado em renda passiva e análise fundamentalista. Analise o ativo abaixo de forma profissional, direta e em português brasileiro.
-
-ATIVO: ${ticker} ${d ? '— ' + d.nome : ''}
-${contextoAtivo}
-
-CONTEXTO MACROECONÔMICO ATUAL:
-- SELIC: ${taxaSelic.toFixed(2)}% a.a.
-- CDI: ${taxaCdi.toFixed(2)}% a.a.
-- IPCA (12m): ${taxaIpca.toFixed(2)}%
-- Juro Real: ${(taxaSelic - taxaIpca).toFixed(2)}%
-
-PERFIL DO INVESTIDOR: ${perfilLabel}
-
-Responda em EXATAMENTE este formato (use os títulos em maiúsculas):
-
-O QUE É ESSE ATIVO
-[2-3 frases sobre o que a empresa/fundo faz, seu modelo de negócio e posição no mercado]
-
-OS PROVENTOS SÃO ATRATIVOS?
-[Avalie o DY/rendimento considerando a Selic atual. O ativo compensa vs renda fixa? Histórico de consistência é importante?]
-
-${isFundo ? 'QUALIDADE E PRECIFICAÇÃO DO FUNDO' : 'A EMPRESA É FINANCEIRAMENTE SAUDÁVEL?'}
-[Para ações: comente ROE, payout, dívida e P/VP. Para FIIs: comente P/VP, liquidez, qualidade dos ativos/contratos]
-
-OPORTUNIDADES REAIS AGORA
-[3 motivos concretos para considerar comprar agora, com base nos dados e contexto macro]
-
-RISCOS QUE VOCÊ PRECISA CONHECER
-[3 riscos reais e específicos deste ativo — não genéricos. Seja honesto.]
-
-VEREDICTO PARA PERFIL ${perfilLabel.toUpperCase()}
-[Recomendação clara: Comprar / Monitorar / Evitar — com justificativa de 2-3 frases. Sugira peso máximo na carteira se for o caso.]
-
-⚠ Lembre: dados de referência podem ter defasagem. Confirme sempre no Status Invest e Funds Explorer antes de operar.`;
+  // Verificar se a API Key está configurada
+  const apiKey = process.env.GOOGLE_API_KEY;
+  if (!apiKey) {
+    console.error('❌ GOOGLE_API_KEY não configurada no Netlify');
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        error: 'GOOGLE_API_KEY não configurada no Netlify. Configure em Site settings > Environment variables.' 
+      })
+    };
+  }
 
   try {
-    console.log('📤 Enviando requisição para função Netlify...');
-    
-    const response = await fetch('/.netlify/functions/claude', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: [{ role: 'user', content: prompt }]
-        // Não enviamos model e max_tokens - a função decide
-      })
-    });
+    // Parse do body
+    const body = JSON.parse(event.body);
+    const userPrompt = body.messages?.[body.messages.length - 1]?.content;
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('❌ Erro na resposta:', response.status, errorData);
-      throw new Error(`Claude API error: ${response.status} - ${errorData.error || ''}`);
+    if (!userPrompt) {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Mensagem vazia ou inválida' })
+      };
     }
-    
+
+    console.log('📤 Enviando requisição para Gemini API...');
+
+    // Chamar API do Gemini (endpoint correto v1)
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: userPrompt }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1000,
+          }
+        })
+      }
+    );
+
+    // Verificar se a resposta está OK
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Erro da API Gemini:', response.status, errorText);
+      return {
+        statusCode: response.status,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          error: `Erro da API Gemini (${response.status})`,
+          details: errorText 
+        })
+      };
+    }
+
     const data = await response.json();
-    console.log('✅ Resposta recebida com sucesso');
-    
-    const text = data.content?.map(b => b.text || '').join('').trim();
-    if (!text) throw new Error('Resposta vazia da Claude API');
-    
-    return text;
-    
-  } catch (error) {
-    console.error('❌ Erro na função analisarAtivoComClaude:', error);
-    throw error; // Propaga o erro para o fallback
+    console.log('✅ Resposta recebida do Gemini');
+
+    // Verificar se a resposta tem o formato esperado
+    if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+      console.error('❌ Formato de resposta inválido:', JSON.stringify(data));
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          error: 'Resposta da API Gemini em formato inesperado',
+          raw: data 
+        })
+      };
+    }
+
+    // Extrair texto da resposta
+    const aiText = data.candidates[0].content.parts[0].text;
+
+    // Retornar no formato que o app espera (compatível com Claude)
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+      body: JSON.stringify({
+        content: [{ text: aiText }]
+      })
+    };
+
+  } catch (err) {
+    console.error('❌ Erro na função:', err.message, err.stack);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        error: 'Erro interno no servidor', 
+        message: err.message 
+      })
+    };
   }
-}
+};
