@@ -68,8 +68,7 @@ exports.handler = async (event) => {
     // O Assessor de Aporte gera JSON grande — 1000 tokens truncava
     // a resposta no meio, causando JSON.parse() a falhar no app.js.
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
+  `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
