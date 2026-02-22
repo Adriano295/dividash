@@ -230,22 +230,22 @@ async function analisarAtivo() {
 
   const local = ATIVOS[ticker];
 
-  // Tenta análise via Claude API (IA real)
+  // Tenta análise via Gemini API (IA real)
   let analise = null;
   try {
     analise = await analisarAtivoComClaude(ticker, local);
   } catch(e) {
-    console.warn('Claude API indisponível, usando análise local:', e);
+    console.warn('Gemini API indisponível, usando análise local:', e);
   }
 
-  // Fallback para análise local se Claude falhar
+  // Fallback para análise local se Gemini falhar
   if (!analise) analise = gerarAnaliseTexto(ticker, local);
 
   document.getElementById('a-loading').style.display = 'none';
   preencherResultado(ticker, local, analise);
 }
 
-/* ══ CLAUDE API: Análise de Ativo Individual ══ */
+/* ══ GEMINI API: Análise de Ativo Individual ══ */
 async function analisarAtivoComClaude(ticker, d) {
   const isFundo = d && (d.tipo === 'FII' || d.tipo === 'FIAGRO');
   const perfilLabel = { conservador:'Conservador', moderado:'Moderado', arrojado:'Arrojado' }[perfil];
@@ -312,16 +312,16 @@ VEREDICTO PARA PERFIL ${perfilLabel.toUpperCase()}
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'gemini-1.5-flash', // Gemini (gerenciado pelo proxy)
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     })
   });
 
-  if (!response.ok) throw new Error(`Claude API error: ${response.status}`);
+  if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
   const data = await response.json();
   const text = data.content?.map(b => b.text || '').join('').trim();
-  if (!text) throw new Error('Resposta vazia da Claude API');
+  if (!text) throw new Error('Resposta vazia da Gemini API');
   return text;
 }
 
@@ -522,7 +522,7 @@ function getVerdict(score, dy, p) {
 
 function typewrite(elId, text, cb) {
   const el = document.getElementById(elId);
-  // Formata a resposta do Claude com headers em destaque
+  // Formata a resposta da IA com headers em destaque
   const formatted = text
     .replace(/^(O QUE É ESSE ATIVO|OS PROVENTOS SÃO ATRATIVOS\?|A EMPRESA É FINANCEIRAMENTE SAUDÁVEL\?|QUALIDADE E PRECIFICAÇÃO DO FUNDO|OPORTUNIDADES REAIS AGORA|RISCOS QUE VOCÊ PRECISA CONHECER|VEREDICTO PARA PERFIL [A-ZÁÉÍÓÚÂÊÔÃÕÇ ]+)$/gm,
       '<span class="ai-section-header">$1</span>')
@@ -1539,7 +1539,7 @@ function getBestAtivosCategoria(categoria, perfilObj, objetivo, jaNaCarteira) {
   return scored.sort((a, b) => b.score - a.score).slice(0, 2);
 }
 
-/* ── Função principal: Gerar Assessor de Aporte com Claude IA ── */
+/* ── Função principal: Gerar Assessor de Aporte com Gemini IA ── */
 async function gerarAssessorAporte() {
   const valorStr = document.getElementById('ap-valor').value;
   const aporte = parseFloat(valorStr);
@@ -1581,7 +1581,7 @@ async function gerarAssessorAporte() {
     carteiraTexto += `\nRESUMO: Valor total R$${totalAtual.toFixed(0)} | P&L ${pnl >= 0 ? '+' : ''}R$${pnl.toFixed(0)} | Renda mensal R$${rendaMensal.toFixed(0)}/mês | DY médio ${dyMedio.toFixed(1)}%`;
   }
 
-  // Base de ativos disponíveis resumida para Claude
+  // Base de ativos disponíveis resumida para Gemini
   const ativosDisponiveis = Object.entries(ATIVOS).map(([ticker, d]) => {
     const isFundo = d.tipo === 'FII' || d.tipo === 'FIAGRO';
     return `${ticker} (${d.nome}, ${d.setor}, DY:${d.dy}%, P/VP:${d.pvp}x${isFundo ? `, IR:${d.isentoIR ? 'Isento' : 'Trib'}` : `, ROE:${d.roe}%, Div:${d.divida}x`}, Preço:R$${d.preco})`;
@@ -1653,9 +1653,9 @@ Responda em EXATAMENTE este formato JSON (sem markdown, apenas JSON puro):
     const response = await fetch('/.netlify/functions/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      // API key gerenciada pelo server.js (proxy local)
+      // API key gerenciada pela Netlify Function gemini proxy
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'gemini-1.5-flash', // Gemini (gerenciado pelo proxy)
         max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -1666,13 +1666,13 @@ Responda em EXATAMENTE este formato JSON (sem markdown, apenas JSON puro):
     const clean = raw.replace(/```json|```/g, '').trim();
     resultado = JSON.parse(clean);
   } catch(e) {
-    console.error('Claude API erro:', e);
+    console.error('Gemini API erro:', e);
     document.getElementById('ap-loading').style.display = 'none';
     document.getElementById('ap-empty').style.display = 'block';
     document.getElementById('ap-empty').innerHTML = `
       <div class="a-empty-icon">⚠️</div>
       <h3>Erro ao conectar com a IA</h3>
-      <p>Não foi possível obter análise da Claude API neste momento.<br>Verifique sua conexão ou tente novamente.</p>
+      <p>Não foi possível obter análise da Gemini API neste momento.<br>Verifique sua conexão ou tente novamente.</p>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">Erro: ${e.message}</p>`;
     return;
   }
@@ -1693,7 +1693,7 @@ function limparResultadoAporte() {
     <p>Informe o valor que você tem disponível e receba um plano completo de onde investir, com riscos e oportunidades detalhados por ativo.</p>`;
 }
 
-/* ══ RENDER PRINCIPAL: resultado do Claude IA ══ */
+/* ══ RENDER PRINCIPAL: resultado do Gemini IA ══ */
 function renderResultadoAporteIA(r, aporte, totalAtual, rendaMensal, dyMedio, pnl, nAtivos) {
   const totalInvest = portfolio.reduce((s,a) => s + a.totalInvest, 0);
   const pnlPct = totalInvest > 0 ? (pnl / totalInvest * 100) : 0;
@@ -1739,7 +1739,7 @@ function renderResultadoAporteIA(r, aporte, totalAtual, rendaMensal, dyMedio, pn
   const saldo = r.saldoNaoAlocado || 0;
   const valorUsado = aporte - saldo;
   document.getElementById('ap-compras-desc').innerHTML =
-    compras.length ? `Plano gerado pela <strong style="color:var(--purple)">Claude IA</strong> para <strong>${fBRL(valorUsado)}</strong> em <strong>${compras.length} ativo${compras.length>1?'s':''}</strong>. Renda adicional estimada: <strong style="color:var(--green)">+${fBRL(totalRendaAdicional)}/mês</strong>.${saldo > 0 ? ` Saldo não alocado: ${fBRL(saldo)}.` : ''}`
+    compras.length ? `Plano gerado pela <strong style="color:var(--purple)">Gemini IA</strong> para <strong>${fBRL(valorUsado)}</strong> em <strong>${compras.length} ativo${compras.length>1?'s':''}</strong>. Renda adicional estimada: <strong style="color:var(--green)">+${fBRL(totalRendaAdicional)}/mês</strong>.${saldo > 0 ? ` Saldo não alocado: ${fBRL(saldo)}.` : ''}`
     : 'A IA não encontrou alocações adequadas para o valor e perfil informados.';
 
   let comprasHTML = '<div class="ap-compras-grid">';
@@ -1840,7 +1840,7 @@ function renderResultadoAporteIA(r, aporte, totalAtual, rendaMensal, dyMedio, pn
     }
   });
   impHTML += '</div>';
-  if (r.mensagemFinal) impHTML += `<div style="margin-top:16px;padding:14px 16px;background:var(--bg3);border-radius:10px;border-left:4px solid var(--purple);font-size:13px;color:var(--text);line-height:1.7"><span style="color:var(--purple);font-weight:800">🤖 Claude diz:</span> ${r.mensagemFinal}</div>`;
+  if (r.mensagemFinal) impHTML += `<div style="margin-top:16px;padding:14px 16px;background:var(--bg3);border-radius:10px;border-left:4px solid var(--purple);font-size:13px;color:var(--text);line-height:1.7"><span style="color:var(--purple);font-weight:800">🤖 IA Gemini diz:</span> ${r.mensagemFinal}</div>`;
   document.getElementById('ap-impacto-content').innerHTML = impHTML;
 }
 
@@ -1880,5 +1880,3 @@ function renderGapsAporte(alocAtualPct, idealMap, gaps) {
   html += '</div>';
   document.getElementById('ap-gaps-content').innerHTML = html;
 }
-
-
