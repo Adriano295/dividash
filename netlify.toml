@@ -1,0 +1,16 @@
+# ══════════════════════════════════════════════════════
+#  DiviDash Pro — Configuração Netlify
+#  Arquivo: netlify.toml (coloque na RAIZ do projeto)
+# ══════════════════════════════════════════════════════
+
+[build]
+  # Pasta onde estão index.html, style.css, app.js
+  publish = "."
+  # Pasta das funções serverless
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"

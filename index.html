@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>DiviDash Pro — Assessor Completo de Investimentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="brand">
+    <div class="brand-icon"><i class="fa-solid fa-chart-line"></i></div>
+    <div><div class="brand-name">DiviDash <span class="g">Pro</span></div><div class="brand-sub">Assessor de Dividendos</div></div>
+  </div>
+
+  <div class="sidebar-rates">
+    <div class="srate-row"><span class="srate-label">SELIC</span><span class="srate-val sv-green" id="sr-selic">—</span></div>
+    <div class="srate-row"><span class="srate-label">CDI</span><span class="srate-val sv-blue"  id="sr-cdi">—</span></div>
+    <div class="srate-row"><span class="srate-label">IPCA</span><span class="srate-val sv-gold"  id="sr-ipca">—</span></div>
+  </div>
+
+  <div class="nav-group">Principal</div>
+  <ul class="sidebar-nav">
+    <li class="nav-item active" data-section="assessor" onclick="nav(this)">
+      <i class="fa-solid fa-robot"></i> Assessor IA <span class="badge-ai">IA</span>
+    </li>
+    <li class="nav-item" data-section="oportunidades" onclick="nav(this)">
+      <i class="fa-solid fa-fire"></i> Oportunidades <span class="badge-hot">HOT</span>
+    </li>
+    <li class="nav-item" data-section="carteira" onclick="nav(this)">
+      <i class="fa-solid fa-briefcase"></i> Minha Carteira
+    </li>
+    <li class="nav-item" data-section="mercado" onclick="nav(this)">
+      <i class="fa-solid fa-globe"></i> Painel de Mercado
+    </li>
+  </ul>
+
+  <div class="nav-group">Ativos & Renda</div>
+  <ul class="sidebar-nav">
+    <li class="nav-item" data-section="best" onclick="nav(this)">
+      <i class="fa-solid fa-star"></i> Ações B.E.S.T
+    </li>
+    <li class="nav-item" data-section="fiis" onclick="nav(this)">
+      <i class="fa-solid fa-building"></i> FIIs & FIAGROs
+    </li>
+    <li class="nav-item" data-section="rendafixa" onclick="nav(this)">
+      <i class="fa-solid fa-shield-halved"></i> Renda Fixa
+    </li>
+  </ul>
+
+  <div class="nav-group">Ferramentas</div>
+  <ul class="sidebar-nav">
+    <li class="nav-item" data-section="aporte" onclick="nav(this)">
+      <i class="fa-solid fa-brain"></i> Assessor de Aporte <span class="badge-new">NOVO</span>
+    </li>
+    <li class="nav-item" data-section="simulador" onclick="nav(this)">
+      <i class="fa-solid fa-calculator"></i> Simulador
+    </li>
+    <li class="nav-item" data-section="checklist" onclick="nav(this)">
+      <i class="fa-solid fa-list-check"></i> Score de Ativo
+    </li>
+    <li class="nav-item" data-section="educacao" onclick="nav(this)">
+      <i class="fa-solid fa-graduation-cap"></i> Educação
+    </li>
+    <li class="nav-item" data-section="links" onclick="nav(this)">
+      <i class="fa-solid fa-link"></i> Links Úteis
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <div class="sfp">
+      <div class="sfp-ava"><i class="fa-solid fa-user"></i></div>
+      <div><div class="sfp-name">Investidor</div><div class="sfp-level" id="sfp-level">Conservador</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MOBILE HEADER -->
+<header id="mob-header">
+  <div class="mob-brand">
+    <div class="mob-brand-icon"><i class="fa-solid fa-chart-line"></i></div>
+    <span style="font-size:16px;font-weight:800">DiviDash <span class="g">Pro</span></span>
+  </div>
+  <button class="mob-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+</header>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- ══ ASSESSOR ══ -->
+  <section class="page active" id="assessor">
+    <div class="page-header">
+      <h1 class="page-title">Assessor <span class="g">IA</span></h1>
+      <p class="page-sub">Análise fundamentalista de qualquer ativo da base — ações, FIIs e FIAGROs</p>
+    </div>
+
+    <div class="macros-bar">
+      <div class="macro-item"><div class="macro-label">Selic</div><div class="macro-val up" id="m-selic">—</div></div>
+      <div class="macro-divider"></div>
+      <div class="macro-item"><div class="macro-label">CDI</div><div class="macro-val up" id="m-cdi">—</div></div>
+      <div class="macro-divider"></div>
+      <div class="macro-item"><div class="macro-label">IPCA 12m</div><div class="macro-val neut" id="m-ipca">—</div></div>
+      <div class="macro-divider"></div>
+      <div class="macro-item"><div class="macro-label">Juro Real</div><div class="macro-val up" id="m-juro">—</div></div>
+    </div>
+
+    <div class="profile-bar">
+      <span class="pb-label">Seu perfil:</span>
+      <div class="pb-opts">
+        <button class="pb-btn active" data-p="conservador" onclick="setProfile(this)">🛡 Conservador</button>
+        <button class="pb-btn"        data-p="moderado"    onclick="setProfile(this)">⚖ Moderado</button>
+        <button class="pb-btn"        data-p="arrojado"    onclick="setProfile(this)">🚀 Arrojado</button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <div class="search-inner">
+        <i class="fa-solid fa-magnifying-glass search-ico"></i>
+        <input id="ai-ticker" type="text" placeholder="Digite o ticker (ex: BBAS3, MXRF11, KLBN11…)" maxlength="10"
+          oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')analisarAtivo()"/>
+        <button class="btn-analisar" onclick="analisarAtivo()"><i class="fa-solid fa-bolt"></i> Analisar</button>
+      </div>
+      <div class="search-sugs">
+        <span class="sug-l">Sugestões:</span>
+        <span class="sug" onclick="quickAnalyze('BBAS3')">BBAS3</span>
+        <span class="sug" onclick="quickAnalyze('MXRF11')">MXRF11</span>
+        <span class="sug" onclick="quickAnalyze('TAEE11')">TAEE11</span>
+        <span class="sug" onclick="quickAnalyze('KLBN11')">KLBN11</span>
+        <span class="sug" onclick="quickAnalyze('SAPR11')">SAPR11</span>
+        <span class="sug" onclick="quickAnalyze('BBSE3')">BBSE3</span>
+        <span class="sug" onclick="quickAnalyze('PETR4')">PETR4</span>
+        <span class="sug" onclick="quickAnalyze('RURA11')">RURA11</span>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="a-loading" class="a-loading-card" style="display:none">
+      <div class="spinner"></div>
+      <div><strong>Consultando Claude IA para <span id="load-ticker"></span>…</strong></div>
+      <div style="font-size:12px;color:var(--muted)">Análise fundamentalista em tempo real</div>
+      <div class="ai-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--purple);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:5px;font-family:var(--mono);margin-top:8px">🤖 Claude Sonnet 4 ativo</div>
+    </div>
+
+    <!-- Empty -->
+    <div id="a-empty" class="a-empty">
+      <div class="a-empty-icon">📊</div>
+      <h3>Pronto para analisar</h3>
+      <p>Digite um ticker acima ou clique em uma das sugestões.<br>Ações, FIIs e FIAGROs com análise completa.</p>
+    </div>
+
+    <!-- Result -->
+    <div id="a-result" style="display:none">
+      <div class="asset-head">
+        <div class="asset-badge" id="r-badge">—</div>
+        <div class="asset-meta">
+          <h2 id="r-name">—</h2>
+          <div class="asset-tags-row">
+            <span class="t-setor" id="r-setor">—</span>
+            <span class="t-tipo"  id="r-tipo-tag">—</span>
+            <span class="t-perfil" id="r-perfil">—</span>
+          </div>
+        </div>
+        <div class="asset-verdict" id="r-verdict">
+          <div class="verdict-ico" id="v-ico">—</div>
+          <div class="verdict-lbl" id="v-lbl">—</div>
+        </div>
+      </div>
+
+      <div class="dy-card">
+        <div class="dy-top">
+          <div class="dy-title">Dividend Yield / Rendimento</div>
+          <i class="fa-solid fa-circle-info help-dot" onclick="toggleTip('tip-dy')"></i>
+          <div class="tooltip-box" id="tip-dy">DY = dividendos pagos nos últimos 12 meses ÷ preço atual × 100. Para FIIs, considere o YoC (rendimento sobre preço pago).</div>
+        </div>
+        <div class="dy-number g" id="r-dy">—</div>
+        <div class="dy-bar-wrap">
+          <div class="dy-bar-track">
+            <div class="dy-zone z1"></div><div class="dy-zone z2"></div>
+            <div class="dy-zone z3"></div><div class="dy-zone z4"></div>
+          </div>
+          <div class="dy-needle" id="dy-needle"></div>
+        </div>
+        <div class="dy-labels"><span>0%</span><span>4%</span><span>8%</span><span>16%</span></div>
+        <div class="dy-legend">
+          <span class="dyl r">● Baixo (&lt;4%)</span>
+          <span class="dyl y">● Razoável (4-6%)</span>
+          <span class="dyl gr">● Ideal (6-14%)</span>
+          <span class="dyl w">● Atenção (&gt;14%)</span>
+        </div>
+        <div class="dy-interp" id="dy-interp"></div>
+      </div>
+
+      <div class="ind-grid">
+        <div class="ind-card">
+          <div class="ind-ico blue"><i class="fa-solid fa-percent"></i></div>
+          <div class="ind-lbl" id="lbl-payout">Payout</div>
+          <div class="ind-val" id="r-payout">—</div>
+          <div class="ind-sub" id="r-payout-sub"></div>
+        </div>
+        <div class="ind-card">
+          <div class="ind-ico green"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div class="ind-lbl" id="lbl-roe">ROE</div>
+          <div class="ind-val" id="r-roe">—</div>
+          <div class="ind-sub" id="r-roe-sub"></div>
+        </div>
+        <div class="ind-card">
+          <div class="ind-ico gold"><i class="fa-solid fa-weight-hanging"></i></div>
+          <div class="ind-lbl" id="lbl-divida">Dívida/EBITDA</div>
+          <div class="ind-val" id="r-divida">—</div>
+          <div class="ind-sub" id="r-divida-sub"></div>
+        </div>
+        <div class="ind-card">
+          <div class="ind-ico purple"><i class="fa-solid fa-scale-balanced"></i></div>
+          <div class="ind-lbl" id="lbl-pvp">P/VP</div>
+          <div class="ind-val" id="r-pvp">—</div>
+          <div class="ind-sub" id="r-pvp-sub"></div>
+        </div>
+      </div>
+
+      <div class="ai-card">
+        <div class="ai-card-head">
+          <div class="ai-ava"><i class="fa-solid fa-robot"></i></div>
+          <div><div class="ai-title">Análise do Assessor</div><div class="ai-sub" id="ai-profile-label">Para perfil conservador</div></div>
+          <div class="ai-pulse" id="ai-pulse"></div>
+        </div>
+        <div class="ai-body" id="ai-body"></div>
+      </div>
+
+      <div class="alloc-card">
+        <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Alocação ideal para seu perfil</div>
+        <p class="alloc-p" id="alloc-p"></p>
+        <div id="alloc-bars"></div>
+        <div class="alloc-warn"><i class="fa-solid fa-circle-info"></i> Sugestão educacional. Adapte à sua realidade financeira.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ OPORTUNIDADES ══ -->
+  <section class="page" id="oportunidades">
+    <div class="page-header">
+      <h1 class="page-title">🔥 <span class="g">Oportunidades</span></h1>
+      <p class="page-sub">Score DiviDash — ativos ranqueados por qualidade fundamentalista. Filtre por categoria.</p>
+    </div>
+    <div class="oport-filter-bar">
+      <span class="oport-filter-label">Filtrar:</span>
+      <button class="filt-btn active" onclick="setFiltroOport(this,'Todos')">Todos</button>
+      <button class="filt-btn" onclick="setFiltroOport(this,'Bancos')">🏦 Bancos</button>
+      <button class="filt-btn" onclick="setFiltroOport(this,'Energia')">⚡ Energia</button>
+      <button class="filt-btn" onclick="setFiltroOport(this,'Saneamento')">💧 Saneamento</button>
+      <button class="filt-btn" onclick="setFiltroOport(this,'Telecom/Seguros')">📡 Telecom/Seg</button>
+      <button class="filt-btn" onclick="setFiltroOport(this,'Agronegócio')">🌾 Agronegócio</button>
+      <button class="filt-btn" onclick="setFiltroOport(this,'Petróleo')">🛢 Petróleo</button>
+      <button class="filt-btn" onclick="setFiltroOport(this,'Celulose')">🌳 Celulose/Papel</button>
+      <button class="filt-btn" onclick="setFiltroOport(this,'FIIs/FIAGROs')">🏢 FIIs/FIAGROs</button>
+    </div>
+    <div class="oport-grid" id="oport-grid"></div>
+  </section>
+
+  <!-- ══ CARTEIRA ══ -->
+  <section class="page" id="carteira">
+    <div class="page-header">
+      <h1 class="page-title">💼 Minha <span class="g">Carteira</span></h1>
+      <p class="page-sub">Registre seus ativos, veja P&L em tempo real e diagnóstico inteligente</p>
+    </div>
+
+    <!-- Barra de atualização de preços -->
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px"><i class="fa-solid fa-satellite-dish" style="color:var(--green)"></i> Cotações via Brapi (B3 oficial)</div>
+          <div style="font-size:12px;color:var(--muted)" id="brapi-status">Clique em "Atualizar Preços" para buscar cotações reais da B3</div>
+        </div>
+        <button class="btn-add" onclick="atualizarCotacoes()" id="btn-atualizar">
+          <i class="fa-solid fa-rotate"></i> Atualizar Preços
+        </button>
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono)" id="ultima-atualizacao"></div>
+      </div>
+    </div>
+
+    <div class="port-add">
+      <div class="card-title"><i class="fa-solid fa-plus"></i> Adicionar Ativo</div>
+      <div class="port-form">
+        <div class="ig" style="position:relative">
+          <label>Ticker</label>
+          <input id="pt" type="text" placeholder="BBAS3…" maxlength="7"
+            oninput="this.value=this.value.toUpperCase();sugerirAtivo()" autocomplete="off"/>
+          <div class="ticker-suggest" id="ticker-suggest" style="display:none"></div>
+        </div>
+        <div class="ig"><label>Quantidade</label><input id="pq" type="number" placeholder="100"/></div>
+        <div class="ig"><label>Preço Médio (R$)</label><input id="pp" type="number" placeholder="28.50" step="0.01"/></div>
+        <div class="ig">
+          <label>Preço Atual (R$) <span id="preco-auto-badge" style="font-size:10px;color:var(--green);font-family:var(--mono);display:none">✓ Auto</span></label>
+          <input id="pp-atual" type="number" placeholder="automático ou manual" step="0.01"/>
+        </div>
+        <div class="ig"><label>DY % (anual)</label><input id="pdyv" type="number" placeholder="8.5" step="0.1"/></div>
+        <div class="ig">
+          <label>Categoria</label>
+          <select id="pset">
+            <option value="Ações">Ações</option>
+            <option value="Bancos">Bancos</option>
+            <option value="Energia">Energia</option>
+            <option value="Saneamento">Saneamento</option>
+            <option value="Telecom/Seguros">Telecom/Seguros</option>
+            <option value="Petróleo & Gás">Petróleo & Gás</option>
+            <option value="Agronegócio">Agronegócio</option>
+            <option value="Celulose/Papel">Celulose/Papel</option>
+            <option value="Indústria">Indústria</option>
+            <option value="FIIs">FIIs</option>
+            <option value="FIAGROs">FIAGROs</option>
+            <option value="Renda Fixa">Renda Fixa</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+        <div class="ig" style="justify-content:flex-end">
+          <label style="opacity:0">add</label>
+          <button class="btn-add" onclick="addAsset()"><i class="fa-solid fa-plus"></i> Adicionar</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--green);font-family:var(--mono);margin-top:6px" id="dy-hint"></div>
+    </div>
+
+    <div id="p-empty" class="p-empty">
+      <i class="fa-solid fa-briefcase"></i>
+      <p>Sua carteira está vazia. Adicione o primeiro ativo acima!</p>
+    </div>
+
+    <div id="p-content" style="display:none">
+      <div class="p-summary" id="p-summary"></div>
+
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-title"><i class="fa-solid fa-table"></i> Posições Abertas</div>
+        <div class="p-table-wrap">
+          <table class="p-table">
+            <thead>
+              <tr>
+                <th>Ticker</th><th>Qtd</th><th>Preço Médio</th><th>Preço Atual</th>
+                <th>Investido</th><th>Valor Atual</th>
+                <th>P&L R$/%</th><th>DY</th><th>Renda/Mês</th>
+                <th>Categoria</th><th>Peso</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="p-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-sector-card">
+        <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Distribuição por Categoria</div>
+        <div id="p-sector-bars"></div>
+        <div id="p-rec" class="p-rec ok" style="margin-top:12px"></div>
+      </div>
+
+      <div class="diag-card">
+        <div class="card-title"><i class="fa-solid fa-stethoscope"></i> Diagnóstico Inteligente</div>
+        <div id="p-diag"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ MERCADO ══ -->
+  <section class="page" id="mercado">
+    <div class="page-header">
+      <h1 class="page-title">Painel de <span class="gb">Mercado</span></h1>
+      <p class="page-sub">Taxas macroeconômicas em tempo real via API do Banco Central</p>
+    </div>
+    <div class="macro-cards-grid" id="macro-cards"></div>
+    <div class="card">
+      <div class="card-title"><i class="fa-solid fa-graduation-cap"></i> Como ler esses indicadores</div>
+      <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:8px">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:6px">SELIC</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">Taxa básica de juros do Brasil. Definida pelo COPOM. É o piso de rentabilidade — qualquer investimento precisa superar ela para fazer sentido.</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px">CDI</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">Sempre ~0,10% abaixo da SELIC. Referência para CDBs, LCI/LCA. Quando você vê "100% do CDI", é esse o número.</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px">IPCA</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">Inflação oficial medida pelo IBGE. O Juro Real = SELIC - IPCA. Se o IPCA supera a Selic, você está perdendo poder de compra!</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ AÇÕES B.E.S.T ══ -->
+  <section class="page" id="best">
+    <div class="page-header">
+      <h1 class="page-title">Ações <span class="g">B.E.S.T</span></h1>
+      <p class="page-sub"><strong>B</strong>ancos · <strong>E</strong>nergia · <strong>S</strong>aneamento · <strong>T</strong>elecom/Seguros + Petróleo, Agronegócio & Celulose</p>
+    </div>
+    <div class="best-grid">
+
+      <div class="best-card">
+        <div class="best-ico bi-bank"><i class="fa-solid fa-landmark"></i></div>
+        <div class="best-head"><h2>Bancos</h2><span class="best-letter">B</span></div>
+        <p>ROE alto, dividend yield generoso e distribuição via JCP. Bancos brasileiros são entre os mais rentáveis do mundo.</p>
+        <div class="best-insight">💡 BBAS3 negocia com desconto histórico vs pares privados</div>
+        <div class="best-risk-row">
+          <span class="risk moderate">Risco Moderado</span>
+          <span class="best-perf">DY médio: 6–9%</span>
+        </div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('BBAS3')">BBAS3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('ITUB4')">ITUB4</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('BBDC4')">BBDC4</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('SANB11')">SANB11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('ABCB4')">ABCB4</span>
+        </div>
+        <div class="best-btns">
+          <a class="bbl si" href="https://statusinvest.com.br/acoes" target="_blank"><i class="fa-solid fa-chart-bar"></i> Status Invest</a>
+          <a class="bbl i10" href="https://investidor10.com.br/acoes/" target="_blank"><i class="fa-solid fa-ranking-star"></i> Investidor 10</a>
+        </div>
+      </div>
+
+      <div class="best-card">
+        <div class="best-ico bi-energy"><i class="fa-solid fa-bolt"></i></div>
+        <div class="best-head"><h2>Energia</h2><span class="best-letter">E</span></div>
+        <p>Concessões reguladas, contratos de longo prazo e receitas previsíveis. Setor mais defensivo da bolsa ao lado de saneamento.</p>
+        <div class="best-insight">💡 TAEE11 e TRPL4 têm receita quase 100% previsível</div>
+        <div class="best-risk-row">
+          <span class="risk low">Risco Baixo</span>
+          <span class="best-perf">DY médio: 7–10%</span>
+        </div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('TAEE11')">TAEE11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('EGIE3')">EGIE3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('TRPL4')">TRPL4</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('CMIG4')">CMIG4</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('CPFE3')">CPFE3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('CPLE6')">CPLE6</span>
+        </div>
+        <div class="best-btns">
+          <a class="bbl si" href="https://statusinvest.com.br/acoes" target="_blank"><i class="fa-solid fa-chart-bar"></i> Status Invest</a>
+        </div>
+      </div>
+
+      <div class="best-card">
+        <div class="best-ico bi-sanea"><i class="fa-solid fa-droplet"></i></div>
+        <div class="best-head"><h2>Saneamento</h2><span class="best-letter">S</span></div>
+        <p>Monopólio natural, serviço essencial e concessões de décadas. Base perfeita para carteira conservadora.</p>
+        <div class="best-insight">💡 SAPR11 paga dividendos trimestrais consistentes há anos</div>
+        <div class="best-risk-row">
+          <span class="risk low">Risco Baixo</span>
+          <span class="best-perf">DY médio: 5–7%</span>
+        </div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('SAPR11')">SAPR11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('CSMG3')">CSMG3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('SBSP3')">SBSP3</span>
+        </div>
+        <div class="best-btns">
+          <a class="bbl si" href="https://statusinvest.com.br/acoes" target="_blank"><i class="fa-solid fa-chart-bar"></i> Status Invest</a>
+        </div>
+      </div>
+
+      <div class="best-card">
+        <div class="best-ico" style="background:#e040fb18;color:var(--purple);border:1px solid #e040fb30"><i class="fa-solid fa-signal"></i></div>
+        <div class="best-head"><h2>Telecom & Seguros</h2><span class="best-letter">T</span></div>
+        <p>BBSE3 com ROE de 45% e modelo asset-light é uma das melhores empresas de dividendos do Brasil.</p>
+        <div class="best-insight">💡 BBSE3 distribui quase tudo como dividendo — ROE > 40%</div>
+        <div class="best-risk-row">
+          <span class="risk moderate">Risco Moderado</span>
+          <span class="best-perf">DY médio: 5–9%</span>
+        </div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('BBSE3')">BBSE3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('VIVT3')">VIVT3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('PSSA3')">PSSA3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('TIMS3')">TIMS3</span>
+        </div>
+        <div class="best-btns">
+          <a class="bbl si" href="https://statusinvest.com.br/acoes" target="_blank"><i class="fa-solid fa-chart-bar"></i> Status Invest</a>
+        </div>
+      </div>
+
+      <div class="best-card">
+        <div class="best-ico bi-oil"><i class="fa-solid fa-oil-can"></i></div>
+        <div class="best-head"><h2>Petróleo & Mineração</h2><span class="best-letter">P</span></div>
+        <p>PETR4 com DY extraordinário em ciclos de petróleo alto. VALE3 líder global em minério de ferro.</p>
+        <div class="best-insight">💡 Cíclicos — DY varia muito com o preço da commodity</div>
+        <div class="best-risk-row">
+          <span class="risk high">Risco Alto</span>
+          <span class="best-perf">DY médio: 9–15%</span>
+        </div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('PETR4')">PETR4</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('PETR3')">PETR3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('VALE3')">VALE3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('PRIO3')">PRIO3</span>
+        </div>
+        <div class="best-btns">
+          <a class="bbl si" href="https://statusinvest.com.br/acoes" target="_blank"><i class="fa-solid fa-chart-bar"></i> Status Invest</a>
+          <a class="bbl i10" href="https://investidor10.com.br/acoes/" target="_blank"><i class="fa-solid fa-ranking-star"></i> Investidor 10</a>
+        </div>
+      </div>
+
+      <div class="best-card">
+        <div class="best-ico bi-agro"><i class="fa-solid fa-wheat-awn"></i></div>
+        <div class="best-head"><h2>Agronegócio & Celulose</h2><span class="best-letter">A</span></div>
+        <p>Brasil é potência agrícola global. AGRO3, SLC, São Martinho e Klabin combinam dividendos e crescimento.</p>
+        <div class="best-insight">💡 KLBN11: maior exportadora de papel e embalagens do Brasil</div>
+        <div class="best-risk-row">
+          <span class="risk moderate">Risco Moderado</span>
+          <span class="best-perf">DY médio: 4–8%</span>
+        </div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('AGRO3')">AGRO3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('SLCE3')">SLCE3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('SMTO3')">SMTO3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('KLBN11')">KLBN11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('SUZB3')">SUZB3</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('JALL3')">JALL3</span>
+        </div>
+        <div class="best-btns">
+          <a class="bbl si" href="https://statusinvest.com.br/acoes" target="_blank"><i class="fa-solid fa-chart-bar"></i> Status Invest</a>
+          <a class="bbl fe" href="https://fundamentus.com.br" target="_blank"><i class="fa-solid fa-magnifying-glass-chart"></i> Fundamentus</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ FIIs ══ -->
+  <section class="page" id="fiis">
+    <div class="page-header">
+      <h1 class="page-title">FIIs & <span class="gg">FIAGROs</span></h1>
+      <p class="page-sub">Fundos Imobiliários e Agrícolas — renda mensal isenta de IR para Pessoa Física</p>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><i class="fa-solid fa-star"></i> Por que investir em FIIs?</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">🏠</div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px">Isento de IR</div>
+          <div style="font-size:12px;color:var(--muted)">Rendimentos 100% isentos para PF com menos de 10% do fundo</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">📅</div>
+          <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px">Renda Mensal</div>
+          <div style="font-size:12px;color:var(--muted)">A maioria paga todo mês. Perfeito para quem vive de renda.</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">🏢</div>
+          <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:4px">Acesso imobiliário</div>
+          <div style="font-size:12px;color:var(--muted)">Galpões, shoppings e CRIs com R$100 de entrada</div>
+        </div>
+      </div>
+    </div>
+    <div class="best-grid">
+      <div class="best-card">
+        <div class="best-ico bi-fii"><i class="fa-solid fa-file-contract"></i></div>
+        <div class="best-head"><h2>Papel (CRI)</h2></div>
+        <p>Recebíveis imobiliários. Mais correlatos à Selic/CDI — se bem ao lado da renda fixa.</p>
+        <div class="best-insight">💡 KNCR11 é pós-fixado CDI+ — protege em ciclo de alta de juros</div>
+        <div class="best-risk-row"><span class="risk moderate">Risco Moderado</span><span class="best-perf">DY: 11–14%</span></div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('MXRF11')">MXRF11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('KNCR11')">KNCR11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('IRDM11')">IRDM11</span>
+        </div>
+        <div class="best-btns"><a class="bbl fe" href="https://fiis.com.br" target="_blank"><i class="fa-solid fa-building"></i> Funds Explorer</a></div>
+      </div>
+      <div class="best-card">
+        <div class="best-ico bi-agro"><i class="fa-solid fa-warehouse"></i></div>
+        <div class="best-head"><h2>Logística</h2></div>
+        <p>Galpões de e-commerce e logística. Crescimento estrutural com Amazon, Mercado Livre.</p>
+        <div class="best-insight">💡 HGLG11 tem 96%+ de ocupação há anos</div>
+        <div class="best-risk-row"><span class="risk low">Risco Baixo</span><span class="best-perf">DY: 7–9%</span></div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('HGLG11')">HGLG11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('BRCO11')">BRCO11</span>
+        </div>
+        <div class="best-btns"><a class="bbl fe" href="https://fiis.com.br" target="_blank"><i class="fa-solid fa-building"></i> Funds Explorer</a></div>
+      </div>
+      <div class="best-card">
+        <div class="best-ico bi-bank"><i class="fa-solid fa-shop"></i></div>
+        <div class="best-head"><h2>Shopping</h2></div>
+        <p>Shoppings premium. Renda de aluguel + % das vendas. Recuperação pós-pandemia sólida.</p>
+        <div class="best-insight">💡 XPML11 e VISC11 pagando mínimos históricos acima da média</div>
+        <div class="best-risk-row"><span class="risk moderate">Risco Moderado</span><span class="best-perf">DY: 8–10%</span></div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('XPML11')">XPML11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('VISC11')">VISC11</span>
+        </div>
+        <div class="best-btns"><a class="bbl fe" href="https://fiis.com.br" target="_blank"><i class="fa-solid fa-building"></i> Funds Explorer</a></div>
+      </div>
+      <div class="best-card">
+        <div class="best-ico bi-telecom" style="background:#1de9b618;color:var(--teal);border-color:#1de9b630"><i class="fa-solid fa-seedling"></i></div>
+        <div class="best-head"><h2>FIAGROs</h2></div>
+        <p>Recebíveis do agronegócio (CRAs). Rendimento isento de IR, exposição ao setor mais forte da economia.</p>
+        <div class="best-insight">💡 RURA11 (Kinea) é o maior FIAGRO do mercado</div>
+        <div class="best-risk-row"><span class="risk moderate">Risco Moderado</span><span class="best-perf">DY: 12–15%</span></div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('RURA11')">RURA11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('HCTR11')">HCTR11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('EGAF11')">EGAF11</span>
+        </div>
+        <div class="best-btns"><a class="bbl fe" href="https://fiis.com.br" target="_blank"><i class="fa-solid fa-building"></i> Funds Explorer</a></div>
+      </div>
+      <div class="best-card">
+        <div class="best-ico bi-fii"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="best-head"><h2>Fundo de Fundos (FoF)</h2></div>
+        <p>Compra cotas de outros FIIs com desconto. Diversificação automática e gestão ativa do portfólio.</p>
+        <div class="best-insight">💡 FoF compram FIIs em desconto — P/VP do portfólio &lt; 1</div>
+        <div class="best-risk-row"><span class="risk low">Risco Baixo</span><span class="best-perf">DY: 9–11%</span></div>
+        <div class="tickers-row">
+          <span class="tk" onclick="quickAnalyzeAndGo('BCFF11')">BCFF11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('RBRF11')">RBRF11</span>
+          <span class="tk" onclick="quickAnalyzeAndGo('KNRI11')">KNRI11</span>
+        </div>
+        <div class="best-btns"><a class="bbl fe" href="https://fiis.com.br" target="_blank"><i class="fa-solid fa-building"></i> Funds Explorer</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ RENDA FIXA ══ -->
+  <section class="page" id="rendafixa">
+    <div class="page-header">
+      <h1 class="page-title">Renda <span class="g">Fixa</span></h1>
+      <p class="page-sub">Taxas atuais via Banco Central • Simulador com cálculo de IR</p>
+    </div>
+    <div class="macros-bar" style="margin-bottom:20px">
+      <div class="macro-item"><div class="macro-label">SELIC</div><div class="macro-val up" id="rf-selic">—</div></div>
+      <div class="macro-divider"></div>
+      <div class="macro-item"><div class="macro-label">CDI</div><div class="macro-val up" id="rf-cdi">—</div></div>
+      <div class="macro-divider"></div>
+      <div class="macro-item"><div class="macro-label">IPCA</div><div class="macro-val neut" id="rf-ipca">—</div></div>
+    </div>
+    <div class="rf-grid">
+      <div class="rf-card">
+        <div class="rf-head"><span class="rf-ico">🏦</span><div><div class="rf-name">CDB</div><div class="rf-type">Tributado (IR regressivo)</div></div></div>
+        <div class="rf-rate" style="color:var(--blue)" id="cdb-rate">—</div>
+        <div class="rf-desc">Emitido por bancos. IR de 22,5% (até 180d) a 15% (acima de 720d). Garantido pelo FGC até R$250k.</div>
+        <div class="rf-tags"><span class="rf-tag tributado">Tributado</span><span class="rf-tag fgc">FGC R$250k</span></div>
+      </div>
+      <div class="rf-card">
+        <div class="rf-head"><span class="rf-ico">🌾</span><div><div class="rf-name">LCA</div><div class="rf-type">Isento de IR</div></div></div>
+        <div class="rf-rate" style="color:var(--green)" id="lca-rate">—</div>
+        <div class="rf-desc">Letra de Crédito do Agronegócio. ISENTO de IR para PF. Carência mínima de 9 meses. Rende mais que CDB líquido.</div>
+        <div class="rf-tags"><span class="rf-tag isento">Isento IR</span><span class="rf-tag fgc">FGC R$250k</span></div>
+      </div>
+      <div class="rf-card">
+        <div class="rf-head"><span class="rf-ico">🏠</span><div><div class="rf-name">LCI</div><div class="rf-type">Isento de IR</div></div></div>
+        <div class="rf-rate" style="color:var(--green)" id="lci-rate">—</div>
+        <div class="rf-desc">Letra de Crédito Imobiliário. ISENTO de IR para PF. Carência mínima de 9 meses.</div>
+        <div class="rf-tags"><span class="rf-tag isento">Isento IR</span><span class="rf-tag fgc">FGC R$250k</span></div>
+      </div>
+      <div class="rf-card">
+        <div class="rf-head"><span class="rf-ico">📊</span><div><div class="rf-name">Tesouro IPCA+</div><div class="rf-type">Tributado (IR 15%)</div></div></div>
+        <div class="rf-rate" style="color:var(--gold)" id="ipca-rate">—</div>
+        <div class="rf-desc">IPCA + taxa prefixada (~6,5%). Protege de inflação e garante ganho real. Melhor para longo prazo (10+ anos).</div>
+        <div class="rf-tags"><span class="rf-tag tributado">IR 15%</span><span class="rf-tag garantido">Soberano</span></div>
+      </div>
+      <div class="rf-card">
+        <div class="rf-head"><span class="rf-ico">🏛️</span><div><div class="rf-name">Tesouro Selic</div><div class="rf-type">Tributado (IR regressivo)</div></div></div>
+        <div class="rf-rate" style="color:var(--cyan)" id="selic-rate">—</div>
+        <div class="rf-desc">Acompanha a Selic diariamente. Liquidez diária com mínima variação. Ideal como reserva de emergência.</div>
+        <div class="rf-tags"><span class="rf-tag tributado">IR regressivo</span><span class="rf-tag garantido">Soberano</span></div>
+      </div>
+      <div class="rf-card">
+        <div class="rf-head"><span class="rf-ico">🌱</span><div><div class="rf-name">CRI / CRA</div><div class="rf-type">Isento de IR</div></div></div>
+        <div class="rf-rate" style="color:var(--teal)">CDI + 2–4%</div>
+        <div class="rf-desc">Certificados Imobiliários/Agronegócio. Isento de IR. Sem FGC — exige análise do emissor. Aporte mínimo maior.</div>
+        <div class="rf-tags"><span class="rf-tag isento">Isento IR</span><span class="rf-tag tributado">Sem FGC</span></div>
+      </div>
+    </div>
+    <div class="rf-calc">
+      <div class="card-title"><i class="fa-solid fa-calculator"></i> Simulador de Renda Fixa</div>
+      <div class="rf-form-grid">
+        <div class="ig">
+          <label>Tipo de Investimento</label>
+          <select id="rf-tipo" onchange="calcRF()">
+            <option value="cdb">CDB 100% CDI</option>
+            <option value="cdb120">CDB 120% CDI</option>
+            <option value="lci">LCI/LCA 90% CDI (isento IR)</option>
+            <option value="lci95">LCI/LCA 95% CDI (isento IR)</option>
+            <option value="ipca">Tesouro IPCA+ 6,5%</option>
+            <option value="selic">Tesouro Selic</option>
+          </select>
+        </div>
+        <div class="ig"><label>Valor Inicial (R$)</label><input id="rf-valor" type="number" placeholder="10000" oninput="calcRF()"/></div>
+        <div class="ig"><label>Prazo (meses)</label><input id="rf-prazo" type="number" value="12" oninput="calcRF()"/></div>
+        <div class="ig">
+          <label>IR % (0 se isento)</label>
+          <select id="rf-ir" onchange="calcRF()">
+            <option value="0">0% (isento)</option>
+            <option value="22.5">22,5% (até 180 dias)</option>
+            <option value="20">20% (181–360 dias)</option>
+            <option value="17.5">17,5% (361–720 dias)</option>
+            <option value="15" selected>15% (acima de 720 dias)</option>
+          </select>
+        </div>
+      </div>
+      <div class="rf-result">
+        <div class="rf-kpi"><div class="rf-kpi-l">Rendimento Bruto</div><div class="rf-kpi-v" id="rf-bruto">—</div></div>
+        <div class="rf-kpi"><div class="rf-kpi-l">Rendimento Líquido</div><div class="rf-kpi-v" id="rf-liq">—</div></div>
+        <div class="rf-kpi"><div class="rf-kpi-l">Saldo Final</div><div class="rf-kpi-v" id="rf-saldo">—</div></div>
+        <div class="rf-kpi"><div class="rf-kpi-l">Taxa Efetiva a.a.</div><div class="rf-kpi-v" id="rf-taxa">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ASSESSOR DE APORTE INTELIGENTE ══ -->
+  <section class="page" id="aporte">
+    <div class="page-header">
+      <h1 class="page-title">💰 Assessor de <span class="g">Aporte</span></h1>
+      <p class="page-sub">Informe quanto você tem para investir — a IA analisa sua carteira e indica exatamente onde colocar cada real</p>
+    </div>
+
+    <!-- INPUT CARD -->
+    <div class="card ap-input-card">
+      <div class="ap-input-grid">
+        <div class="ig">
+          <label>💵 Valor disponível para aporte (R$)</label>
+          <input id="ap-valor" type="number" placeholder="5000" min="1" step="100"
+            oninput="limparResultadoAporte()" style="font-size:18px;font-weight:700;color:var(--green)"/>
+        </div>
+        <div class="ig">
+          <label>🎯 Objetivo da carteira</label>
+          <select id="ap-objetivo">
+            <option value="renda">Máxima Renda Passiva (DY alto)</option>
+            <option value="equilibrio">Equilíbrio Renda + Crescimento</option>
+            <option value="crescimento">Crescimento Patrimonial (longo prazo)</option>
+            <option value="seguranca">Segurança e Preservação</option>
+          </select>
+        </div>
+        <div class="ig">
+          <label>🛡 Perfil de risco</label>
+          <select id="ap-perfil">
+            <option value="conservador">Conservador — menor volatilidade</option>
+            <option value="moderado" selected>Moderado — equilíbrio risco/retorno</option>
+            <option value="arrojado">Arrojado — maior potencial</option>
+          </select>
+        </div>
+        <div class="ig" style="align-items:flex-end">
+          <label style="opacity:0">go</label>
+          <button class="btn-ap-analisar" onclick="gerarAssessorAporte()">
+            <i class="fa-solid fa-brain"></i> Analisar e Recomendar
+          </button>
+        </div>
+      </div>
+      <div class="ap-aviso">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Adicione ativos na aba <strong>Minha Carteira</strong> para receber recomendações personalizadas. Sem carteira, o assessor sugerirá a carteira inicial ideal para seu perfil.</span>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="ap-loading" style="display:none" class="a-loading-card">
+      <div class="spinner"></div>
+      <div><strong>Claude IA analisando carteira e mercado…</strong></div>
+      <div style="font-size:12px;color:var(--muted)">Calculando gaps, oportunidades e riscos com IA real</div>
+      <div style="display:inline-flex;align-items:center;gap:5px;background:var(--purple);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:5px;font-family:var(--mono);margin-top:8px">🤖 Claude Sonnet 4 processando</div>
+    </div>
+
+    <!-- RESULTADO -->
+    <div id="ap-result" style="display:none">
+
+      <!-- DIAGNÓSTICO ATUAL -->
+      <div class="card ap-section-card">
+        <div class="ap-section-title"><i class="fa-solid fa-chart-pie" style="color:var(--blue)"></i> Diagnóstico da Carteira Atual</div>
+        <div id="ap-diag-content"></div>
+      </div>
+
+      <!-- ANÁLISE DE GAPS -->
+      <div class="card ap-section-card">
+        <div class="ap-section-title"><i class="fa-solid fa-sliders" style="color:var(--gold)"></i> Análise de Alocação vs. Ideal</div>
+        <div id="ap-gaps-content"></div>
+      </div>
+
+      <!-- RECOMENDAÇÕES DE COMPRA -->
+      <div class="card ap-section-card" id="ap-compras-card">
+        <div class="ap-section-title"><i class="fa-solid fa-circle-arrow-up" style="color:var(--green)"></i> Recomendações de Compra</div>
+        <div class="ap-compras-desc" id="ap-compras-desc"></div>
+        <div id="ap-compras-grid"></div>
+      </div>
+
+      <!-- ALERTAS DE VENDA/REDUÇÃO -->
+      <div class="card ap-section-card" id="ap-vendas-card" style="display:none">
+        <div class="ap-section-title"><i class="fa-solid fa-circle-arrow-down" style="color:var(--red)"></i> Atenção — Concentração Excessiva</div>
+        <div id="ap-vendas-content"></div>
+      </div>
+
+      <!-- IMPACTO PROJETADO -->
+      <div class="card ap-section-card">
+        <div class="ap-section-title"><i class="fa-solid fa-rocket" style="color:var(--teal)"></i> Impacto Projetado do Aporte</div>
+        <div id="ap-impacto-content"></div>
+      </div>
+
+      <!-- DISCLAIMER -->
+      <div class="alloc-warn" style="margin-top:16px">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <span>Recomendações baseadas em análise fundamentalista com dados da base DiviDash. Confirme indicadores no Status Invest e Funds Explorer antes de operar. Não é assessoria de valores mobiliários — é educação financeira.</span>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="ap-empty" class="a-empty">
+      <div class="a-empty-icon">🧠</div>
+      <h3>Assessor de Aporte Pronto</h3>
+      <p>Informe o valor que você tem disponível e receba um plano completo de onde investir, com riscos e oportunidades detalhados por ativo.</p>
+    </div>
+  </section>
+
+  <!-- ══ SIMULADOR ══ -->
+  <section class="page" id="simulador">
+    <div class="page-header">
+      <h1 class="page-title">Simulador de <span class="g">Dividendos</span></h1>
+      <p class="page-sub">Projete sua renda passiva com ou sem reinvestimento</p>
+    </div>
+    <div class="sim-card">
+      <div class="sim-form">
+        <div class="ig"><label>Aporte Mensal (R$)</label><input id="s-aporte" type="number" value="1000" oninput="simular()"/></div>
+        <div class="ig"><label>DY Médio (% a.a.)</label><input id="s-dy" type="number" value="8" step="0.5" oninput="simular()"/></div>
+        <div class="ig"><label>Período (anos)</label><input id="s-anos" type="number" value="10" oninput="simular()"/></div>
+        <div class="ig" style="justify-content:flex-end">
+          <label style="opacity:0">op</label>
+          <label class="reinv-row"><input type="checkbox" id="s-reinv" checked onchange="simular()"/> Reinvestir dividendos</label>
+        </div>
+      </div>
+      <div class="sim-kpis">
+        <div class="kpi"><div class="kpi-l">Renda Mensal</div><div class="kpi-v green" id="sr-renda">—</div></div>
+        <div class="kpi"><div class="kpi-l">Patrimônio Final</div><div class="kpi-v gold" id="sr-pat">—</div></div>
+        <div class="kpi"><div class="kpi-l">Total Investido</div><div class="kpi-v muted" id="sr-inv">—</div></div>
+        <div class="kpi"><div class="kpi-l">Ganho em Juros</div><div class="kpi-v green" id="sr-ganho">—</div></div>
+      </div>
+      <canvas id="sim-chart" height="160" style="background:var(--bg3);border-radius:10px;border:1px solid var(--border)"></canvas>
+      <div class="ms-row" id="sim-ms"></div>
+    </div>
+
+    <div class="yoc-card">
+      <div class="yoc-head">
+        <div class="yoc-ico">🎯</div>
+        <div><h3>Calculadora YoC (Yield on Cost)</h3><p style="color:var(--muted);font-size:12px">Rendimento real sobre o preço que você pagou</p></div>
+      </div>
+      <div class="yoc-body">
+        <div style="display:grid;gap:10px">
+          <div class="ig"><label>Preço médio pago (R$)</label><input id="yp" type="number" placeholder="25.00" step="0.01" oninput="calcYOC()"/></div>
+          <div class="ig"><label>Dividendos recebidos/ano (R$)</label><input id="yd" type="number" placeholder="2.50" step="0.01" oninput="calcYOC()"/></div>
+        </div>
+        <div class="yoc-res">
+          <div class="yoc-pct g" id="yoc-pct">—</div>
+          <div class="yoc-msg" id="yoc-msg">Preencha para calcular</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CHECKLIST ══ -->
+  <section class="page" id="checklist">
+    <div class="page-header">
+      <h1 class="page-title">Score de <span class="g">Ativo</span></h1>
+      <p class="page-sub">4 critérios fundamentalistas essenciais para bons pagadores de dividendos</p>
+    </div>
+    <div class="ck-wrap">
+      <div class="ig" style="max-width:320px;margin-bottom:16px">
+        <label>Ticker analisado</label>
+        <input id="ck-t" type="text" placeholder="Ex: BBAS3" maxlength="7" oninput="this.value=this.value.toUpperCase()"/>
+      </div>
+      <div class="ck-list">
+        <label class="ck-row" onclick="scoreCalc()">
+          <input type="checkbox" id="ck1"/>
+          <div class="ckbox"></div>
+          <div class="ck-info">
+            <div class="ck-name">📅 Lucro crescente nos últimos 5 anos <i class="fa-solid fa-circle-info help-dot" onclick="event.stopPropagation();toggleTip('tp1')"></i></div>
+            <div class="ck-desc">Consistência é mais importante que tamanho do lucro</div>
+            <div class="tooltip-box" id="tp1">Empresa que cresce lucro por 5 anos seguidos raramente corta dividendos. Pesquise no Status Invest → Indicadores.</div>
+          </div>
+          <span class="ck-pts">25pts</span>
+        </label>
+        <label class="ck-row" onclick="scoreCalc()">
+          <input type="checkbox" id="ck2"/>
+          <div class="ckbox"></div>
+          <div class="ck-info">
+            <div class="ck-name">📈 ROE acima de 15% <i class="fa-solid fa-circle-info help-dot" onclick="event.stopPropagation();toggleTip('tp2')"></i></div>
+            <div class="ck-desc">Retorno sobre Patrimônio Líquido — mede eficiência do capital</div>
+            <div class="tooltip-box" id="tp2">ROE > 15% indica que a empresa usa bem o dinheiro dos acionistas. Bancos tipicamente têm ROE > 15-20%.</div>
+          </div>
+          <span class="ck-pts">25pts</span>
+        </label>
+        <label class="ck-row" onclick="scoreCalc()">
+          <input type="checkbox" id="ck3"/>
+          <div class="ckbox"></div>
+          <div class="ck-info">
+            <div class="ck-name">💰 Dívida/EBITDA abaixo de 3x <i class="fa-solid fa-circle-info help-dot" onclick="event.stopPropagation();toggleTip('tp3')"></i></div>
+            <div class="ck-desc">Endividamento controlado protege o fluxo de dividendos</div>
+            <div class="tooltip-box" id="tp3">Com Selic alta, dívida alta = juros altos = menos lucro = menos dividendos. Exceções: utilities (energia/saneamento) toleram até 3,5x.</div>
+          </div>
+          <span class="ck-pts">25pts</span>
+        </label>
+        <label class="ck-row" onclick="scoreCalc()">
+          <input type="checkbox" id="ck4"/>
+          <div class="ckbox"></div>
+          <div class="ck-info">
+            <div class="ck-name">💸 Payout entre 30% e 85% <i class="fa-solid fa-circle-info help-dot" onclick="event.stopPropagation();toggleTip('tp4')"></i></div>
+            <div class="ck-desc">Distribui bem sem comprometer reinvestimento e crescimento</div>
+            <div class="tooltip-box" id="tp4">Payout > 90% = empresa distribui mais do que deveria. Qualquer queda no lucro força corte no dividendo. Ideal: 40-80%.</div>
+          </div>
+          <span class="ck-pts">25pts</span>
+        </label>
+      </div>
+      <div class="ck-score-box">
+        <div class="ck-ring">
+          <svg viewBox="0 0 84 84">
+            <circle class="ring-bg"   cx="42" cy="42" r="34"/>
+            <circle class="ring-fill" id="ring-arc" cx="42" cy="42" r="34" stroke-dasharray="0 264"/>
+          </svg>
+          <div class="ring-mid"><span id="ck-num">0</span><small>pts</small></div>
+        </div>
+        <div class="ck-verdict">
+          <div class="ckv-lbl" id="ckv-lbl">Aguardando análise…</div>
+          <div class="ckv-desc" id="ckv-desc">Marque os critérios acima</div>
+        </div>
+      </div>
+      <button class="btn-reset" onclick="resetScore()"><i class="fa-solid fa-rotate-left"></i> Limpar análise</button>
+    </div>
+  </section>
+
+  <!-- ══ EDUCAÇÃO ══ -->
+  <section class="page" id="educacao">
+    <div class="page-header">
+      <h1 class="page-title">📚 <span class="g">Educação</span> Financeira</h1>
+      <p class="page-sub">Conceitos essenciais para investir em dividendos com inteligência</p>
+    </div>
+    <div class="edu-grid" id="edu-grid"></div>
+  </section>
+
+  <!-- ══ LINKS ══ -->
+  <section class="page" id="links">
+    <div class="page-header">
+      <h1 class="page-title">🔗 Links <span class="g">Úteis</span></h1>
+      <p class="page-sub">Ferramentas essenciais para pesquisar ações e fundos com profundidade</p>
+    </div>
+    <div class="lk-grid">
+      <a class="lk-card c1" href="https://statusinvest.com.br" target="_blank">
+        <div class="lk-ico">📊</div><h3>Status Invest</h3>
+        <p>DY histórico, payout, ROE, dívida. O mais completo para análise de ações brasileiras.</p>
+        <div class="lk-go"><i class="fa-solid fa-arrow-up-right-from-square"></i> statusinvest.com.br</div>
+      </a>
+      <a class="lk-card c2" href="https://investidor10.com.br" target="_blank">
+        <div class="lk-ico">🏆</div><h3>Investidor 10</h3>
+        <p>Ranking de ações, filtros avançados, carteiras recomendadas e alertas de dividendos.</p>
+        <div class="lk-go"><i class="fa-solid fa-arrow-up-right-from-square"></i> investidor10.com.br</div>
+      </a>
+      <a class="lk-card c3" href="https://fiis.com.br" target="_blank">
+        <div class="lk-ico">🏢</div><h3>Funds Explorer</h3>
+        <p>O melhor site para análise de FIIs — P/VP, DY mensal, vacância, histórico completo.</p>
+        <div class="lk-go"><i class="fa-solid fa-arrow-up-right-from-square"></i> fiis.com.br</div>
+      </a>
+      <a class="lk-card c4" href="https://fundamentus.com.br" target="_blank">
+        <div class="lk-ico">🔍</div><h3>Fundamentus</h3>
+        <p>Indicadores fundamentalistas completos. Filtros poderosos para encontrar barganhas.</p>
+        <div class="lk-go"><i class="fa-solid fa-arrow-up-right-from-square"></i> fundamentus.com.br</div>
+      </a>
+      <a class="lk-card c5" href="https://brapi.dev" target="_blank">
+        <div class="lk-ico">⚡</div><h3>Brapi</h3>
+        <p>API gratuita de cotações B3 em tempo real. Usada pelo DiviDash Pro para atualizar preços.</p>
+        <div class="lk-go"><i class="fa-solid fa-arrow-up-right-from-square"></i> brapi.dev</div>
+      </a>
+      <a class="lk-card c6" href="https://b3.com.br" target="_blank">
+        <div class="lk-ico">🏛️</div><h3>B3 (Bolsa)</h3>
+        <p>Site oficial da bolsa brasileira. Proventos declarados, fatos relevantes e regulamentos.</p>
+        <div class="lk-go"><i class="fa-solid fa-arrow-up-right-from-square"></i> b3.com.br</div>
+      </a>
+      <a class="lk-card c7" href="https://tesourodireto.com.br" target="_blank">
+        <div class="lk-ico">🏦</div><h3>Tesouro Direto</h3>
+        <p>Site oficial. Taxas atualizadas diariamente para todos os títulos do Tesouro Nacional.</p>
+        <div class="lk-go"><i class="fa-solid fa-arrow-up-right-from-square"></i> tesourodireto.com.br</div>
+      </a>
+      <a class="lk-card c8" href="https://api.bcb.gov.br" target="_blank">
+        <div class="lk-ico">📡</div><h3>API Banco Central</h3>
+        <p>Fonte oficial de Selic e IPCA usada pelo DiviDash Pro. Dados 100% confiáveis.</p>
+        <div class="lk-go"><i class="fa-solid fa-arrow-up-right-from-square"></i> api.bcb.gov.br</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- BOTTOM NAV MOBILE -->
+<nav id="bnav">
+  <div class="bnav-inner">
+    <button class="bnav-item active" data-section="assessor"     onclick="navBottom(this)"><i class="fa-solid fa-robot"></i><span>Assessor</span></button>
+    <button class="bnav-item"        data-section="oportunidades" onclick="navBottom(this)"><i class="fa-solid fa-fire"></i><span>Oport.</span></button>
+    <button class="bnav-item"        data-section="carteira"      onclick="navBottom(this)"><i class="fa-solid fa-briefcase"></i><span>Carteira</span></button>
+    <button class="bnav-item"        data-section="aporte"        onclick="navBottom(this)"><i class="fa-solid fa-brain"></i><span>Aporte</span></button>
+    <button class="bnav-item"        data-section="simulador"     onclick="navBottom(this)"><i class="fa-solid fa-calculator"></i><span>Simular</span></button>
+    <button class="bnav-item"        data-section="links"         onclick="navBottom(this)"><i class="fa-solid fa-link"></i><span>Links</span></button>
+  </div>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
