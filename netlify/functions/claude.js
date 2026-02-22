@@ -1,47 +1,73 @@
 // ══════════════════════════════════════════════════════
 //  DiviDash Pro — Netlify Function (Proxy GOOGLE GEMINI)
 //  Arquivo: netlify/functions/claude.js
+//
+//  ⚠️ NOME DO ARQUIVO OBRIGATÓRIO: claude.js
+//     O app.js chama /.netlify/functions/claude
+//     O nome do arquivo define o endpoint!
 // ══════════════════════════════════════════════════════
 
+// Headers CORS centralizados — usados em TODAS as respostas
+const CORS_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 exports.handler = async (event) => {
+
+  // ── FIX 1: Handler de CORS Preflight (OPTIONS) ──────────────
+  // Browsers modernos enviam uma requisição OPTIONS antes do POST.
+  // Sem isso, o fetch falha com erro de CORS antes de chegar no Gemini.
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers: CORS_HEADERS, body: '' };
+  }
+
   // Apenas aceitar POST
   if (event.httpMethod !== 'POST') {
-    return { 
-      statusCode: 405, 
-      body: JSON.stringify({ error: 'Method Not Allowed' }) 
+    return {
+      statusCode: 405,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'Method Not Allowed' })
     };
   }
 
-  // Verificar se a API Key está configurada
+  // Verificar se a API Key está configurada no Netlify
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) {
-    console.error('❌ GOOGLE_API_KEY não configurada no Netlify');
+    console.error('❌ GOOGLE_API_KEY não configurada');
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        error: 'GOOGLE_API_KEY não configurada no Netlify. Configure em Site settings > Environment variables.' 
+      headers: CORS_HEADERS,
+      body: JSON.stringify({
+        error: 'GOOGLE_API_KEY não encontrada. Acesse o painel do Netlify → Site Settings → Environment Variables e adicione a variável GOOGLE_API_KEY com sua chave.'
       })
     };
   }
 
   try {
-    // Parse do body
+    // Parse do body enviado pelo app.js
     const body = JSON.parse(event.body);
+
+    // O app.js envia { messages: [{ role: "user", content: "..." }] }
+    // Pegamos o conteúdo da última mensagem para enviar ao Gemini
     const userPrompt = body.messages?.[body.messages.length - 1]?.content;
 
     if (!userPrompt) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: CORS_HEADERS,
         body: JSON.stringify({ error: 'Mensagem vazia ou inválida' })
       };
     }
 
-    console.log('📤 Enviando requisição para Gemini API...');
+    console.log('📤 Enviando para Gemini API...');
 
-    // Chamar API do Gemini (endpoint correto v1)
-    const response = await fetch(
+    // ── FIX 2: maxOutputTokens aumentado para 2000 ───────────────
+    // O Assessor de Aporte gera JSON grande — 1000 tokens truncava
+    // a resposta no meio, causando JSON.parse() a falhar no app.js.
+    const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
@@ -52,67 +78,62 @@ exports.handler = async (event) => {
           }],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 1000,
+            maxOutputTokens: 2000,
           }
         })
       }
     );
 
     // Verificar se a resposta está OK
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Erro da API Gemini:', response.status, errorText);
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
+      console.error('❌ Erro Gemini:', geminiResponse.status, errorText);
       return {
-        statusCode: response.status,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          error: `Erro da API Gemini (${response.status})`,
-          details: errorText 
+        statusCode: geminiResponse.status,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          error: `Erro da API Gemini (${geminiResponse.status})`,
+          details: errorText
         })
       };
     }
 
-    const data = await response.json();
+    const data = await geminiResponse.json();
     console.log('✅ Resposta recebida do Gemini');
 
-    // Verificar se a resposta tem o formato esperado
+    // Verificar formato da resposta
     if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-      console.error('❌ Formato de resposta inválido:', JSON.stringify(data));
+      console.error('❌ Formato inesperado:', JSON.stringify(data));
       return {
         statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          error: 'Resposta da API Gemini em formato inesperado',
-          raw: data 
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          error: 'Resposta do Gemini em formato inesperado',
+          raw: data
         })
       };
     }
 
-    // Extrair texto da resposta
     const aiText = data.candidates[0].content.parts[0].text;
 
-    // Retornar no formato que o app espera (compatível com Claude)
+    // ── Retornar no formato que o app.js espera ─────────────────
+    // app.js lê: data.content?.map(b => b.text || '').join('')
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         content: [{ text: aiText }]
       })
     };
 
   } catch (err) {
-    console.error('❌ Erro na função:', err.message, err.stack);
+    console.error('❌ Erro interno:', err.message, err.stack);
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        error: 'Erro interno no servidor', 
-        message: err.message 
+      headers: CORS_HEADERS,
+      body: JSON.stringify({
+        error: 'Erro interno no servidor',
+        message: err.message
       })
     };
   }
